@@ -25,8 +25,7 @@ CREATE TABLE IF NOT EXISTS `youtube`.`canal` (
   `nom` VARCHAR(45) NOT NULL,
   `descripcio` VARCHAR(45) NOT NULL,
   `data_creacio` DATETIME NOT NULL,
-  `usuari_idusuari` INT NOT NULL,
-  PRIMARY KEY (`idcanal`, `usuari_idusuari`))
+  PRIMARY KEY (`idcanal`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -44,12 +43,13 @@ CREATE TABLE IF NOT EXISTS `youtube`.`usuari` (
   `pais` VARCHAR(45) NOT NULL,
   `codi_postal` INT NOT NULL,
   `canal_idcanal` INT NOT NULL,
-  `canal_usuari_idusuari` INT NOT NULL,
-  PRIMARY KEY (`idusuari`, `canal_idcanal`, `canal_usuari_idusuari`),
-  INDEX `fk_usuari_canal1_idx` (`canal_idcanal` ASC, `canal_usuari_idusuari` ASC) VISIBLE,
+  PRIMARY KEY (`idusuari`, `canal_idcanal`),
+  INDEX `fk_usuari_canal1_idx` (`canal_idcanal` ASC) VISIBLE,
   CONSTRAINT `fk_usuari_canal1`
-    FOREIGN KEY (`canal_idcanal` , `canal_usuari_idusuari`)
-    REFERENCES `youtube`.`canal` (`idcanal` , `usuari_idusuari`))
+    FOREIGN KEY (`canal_idcanal`)
+    REFERENCES `youtube`.`canal` (`idcanal`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -61,14 +61,13 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `youtube`.`comentaris` (
   `idcomentaris` INT NOT NULL AUTO_INCREMENT,
   `canal_idcanal` INT NOT NULL,
-  `canal_usuari_idusuari` INT NOT NULL,
   `usuari_idusuari` INT NOT NULL,
-  PRIMARY KEY (`idcomentaris`, `canal_idcanal`, `canal_usuari_idusuari`, `usuari_idusuari`),
-  INDEX `fk_comentaris_canal1_idx` (`canal_idcanal` ASC, `canal_usuari_idusuari` ASC) VISIBLE,
+  PRIMARY KEY (`idcomentaris`, `canal_idcanal`, `usuari_idusuari`),
+  INDEX `fk_comentaris_canal1_idx` (`canal_idcanal` ASC) VISIBLE,
   INDEX `fk_comentaris_usuari1_idx` (`usuari_idusuari` ASC) VISIBLE,
   CONSTRAINT `fk_comentaris_canal1`
-    FOREIGN KEY (`canal_idcanal` , `canal_usuari_idusuari`)
-    REFERENCES `youtube`.`canal` (`idcanal` , `usuari_idusuari`),
+    FOREIGN KEY (`canal_idcanal`)
+    REFERENCES `youtube`.`canal` (`idcanal`),
   CONSTRAINT `fk_comentaris_usuari1`
     FOREIGN KEY (`usuari_idusuari`)
     REFERENCES `youtube`.`usuari` (`idusuari`))
@@ -92,11 +91,14 @@ CREATE TABLE IF NOT EXISTS `youtube`.`video` (
   `likes` INT NOT NULL,
   `deslikes` INT NOT NULL,
   `usuari_idusuari` INT NOT NULL,
-  PRIMARY KEY (`idvideo`),
-  INDEX `fk_video_usuari1_idx` (`usuari_idusuari` ASC) VISIBLE,
+  `usuari_canal_idcanal` INT NOT NULL,
+  PRIMARY KEY (`idvideo`, `usuari_idusuari`, `usuari_canal_idcanal`),
+  INDEX `fk_video_usuari1_idx` (`usuari_idusuari` ASC, `usuari_canal_idcanal` ASC) VISIBLE,
   CONSTRAINT `fk_video_usuari1`
-    FOREIGN KEY (`usuari_idusuari`)
-    REFERENCES `youtube`.`usuari` (`idusuari`))
+    FOREIGN KEY (`usuari_idusuari` , `usuari_canal_idcanal`)
+    REFERENCES `youtube`.`usuari` (`idusuari` , `canal_idcanal`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -164,13 +166,12 @@ CREATE TABLE IF NOT EXISTS `youtube`.`suscripcio` (
   `idsuscripcio` INT NOT NULL AUTO_INCREMENT,
   `usuari_idusuari` INT NOT NULL,
   `canal_idcanal` INT NOT NULL,
-  `canal_usuari_idusuari` INT NOT NULL,
-  PRIMARY KEY (`idsuscripcio`, `canal_idcanal`, `canal_usuari_idusuari`),
+  PRIMARY KEY (`idsuscripcio`, `canal_idcanal`),
   INDEX `fk_suscripcio_usuari1_idx` (`usuari_idusuari` ASC) VISIBLE,
-  INDEX `fk_suscripcio_canal1_idx` (`canal_idcanal` ASC, `canal_usuari_idusuari` ASC) VISIBLE,
+  INDEX `fk_suscripcio_canal1_idx` (`canal_idcanal` ASC) VISIBLE,
   CONSTRAINT `fk_suscripcio_canal1`
-    FOREIGN KEY (`canal_idcanal` , `canal_usuari_idusuari`)
-    REFERENCES `youtube`.`canal` (`idcanal` , `usuari_idusuari`),
+    FOREIGN KEY (`canal_idcanal`)
+    REFERENCES `youtube`.`canal` (`idcanal`),
   CONSTRAINT `fk_suscripcio_usuari1`
     FOREIGN KEY (`usuari_idusuari`)
     REFERENCES `youtube`.`usuari` (`idusuari`))
@@ -189,17 +190,16 @@ CREATE TABLE IF NOT EXISTS `youtube`.`valoracions` (
   `data_creacio` DATETIME NOT NULL,
   `comentaris_idcomentaris` INT NOT NULL,
   `comentaris_canal_idcanal` INT NOT NULL,
-  `comentaris_canal_usuari_idusuari` INT NOT NULL,
   `comentaris_usuari_idusuari` INT NOT NULL,
   `usuari_idusuari` INT NOT NULL,
   `video_idvideo` INT NOT NULL,
-  PRIMARY KEY (`idvaloracions`, `comentaris_idcomentaris`, `comentaris_canal_idcanal`, `comentaris_canal_usuari_idusuari`, `comentaris_usuari_idusuari`, `usuari_idusuari`, `video_idvideo`),
-  INDEX `fk_valoracions_comentaris1_idx` (`comentaris_idcomentaris` ASC, `comentaris_canal_idcanal` ASC, `comentaris_canal_usuari_idusuari` ASC, `comentaris_usuari_idusuari` ASC) VISIBLE,
+  PRIMARY KEY (`idvaloracions`, `comentaris_idcomentaris`, `comentaris_canal_idcanal`, `comentaris_usuari_idusuari`, `usuari_idusuari`, `video_idvideo`),
+  INDEX `fk_valoracions_comentaris1_idx` (`comentaris_idcomentaris` ASC, `comentaris_canal_idcanal` ASC, `comentaris_usuari_idusuari` ASC) VISIBLE,
   INDEX `fk_valoracions_usuari1_idx` (`usuari_idusuari` ASC) VISIBLE,
   INDEX `fk_valoracions_video1_idx` (`video_idvideo` ASC) VISIBLE,
   CONSTRAINT `fk_valoracions_comentaris1`
-    FOREIGN KEY (`comentaris_idcomentaris` , `comentaris_canal_idcanal` , `comentaris_canal_usuari_idusuari` , `comentaris_usuari_idusuari`)
-    REFERENCES `youtube`.`comentaris` (`idcomentaris` , `canal_idcanal` , `canal_usuari_idusuari` , `usuari_idusuari`),
+    FOREIGN KEY (`comentaris_idcomentaris` , `comentaris_canal_idcanal` , `comentaris_usuari_idusuari`)
+    REFERENCES `youtube`.`comentaris` (`idcomentaris` , `canal_idcanal` , `usuari_idusuari`),
   CONSTRAINT `fk_valoracions_usuari1`
     FOREIGN KEY (`usuari_idusuari`)
     REFERENCES `youtube`.`usuari` (`idusuari`),

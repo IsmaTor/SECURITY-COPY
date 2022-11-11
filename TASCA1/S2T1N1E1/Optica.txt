@@ -1,20 +1,15 @@
-use optica;
+USE optica;
 
-
-
-//Llista el total de factures d'un client/a en un període determinat.
-
+-- Llista el total de factures d'un client/a en un període determinat.
 SELECT data_venta , clients_idclients FROM ventes
 WHERE data_venta BETWEEN '2022-11-03' and '2022-11-10'
 AND clients_idclients = 2
 
-//Llista els diferents models d'ulleres que ha venut un empleat/da durant un any.
-
+-- Llista els diferents models d'ulleres que ha venut un empleat/da durant un any.
 SELECT treballador, ulleres_idulleres, data_venta FROM ventes
 WHERE data_venta BETWEEN '2022-01-01' AND '2022-12-31'
 
-//Llista els diferents proveïdors que han subministrat ulleres venudes amb èxit per l'òptica.
-
+-- Llista els diferents proveïdors que han subministrat ulleres venudes amb èxit per l'òptica.
 SELECT ventes.ulleres_idulleres, ulleres.marca, proveidors.Nom_proveidor, data_venta FROM ventes
 INNER JOIN ulleres ON ventes.ulleres_idulleres = ulleres.idUlleres
 INNER JOIN proveidors ON ulleres.proveidors_NIF_proveidor = proveidors.NIF_proveidor;

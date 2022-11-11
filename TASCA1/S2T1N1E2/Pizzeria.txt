@@ -1,12 +1,12 @@
-//Llista quants productes de categoria 'Begudes' s'han venut en una determinada localitat.
+USE pizzerias;
 
-select count(begudes.idbegudes), localitat.nom, begudes.nom from begudes
-inner join comanda on begudes.comanda_idcomanda = comanda.idcomanda
-inner join tenda on comanda.tenda_idtenda = tenda.idtenda
-inner join localitat on tenda.idtenda = localitat.idLocalitat
-where idlocalitat = 1
+-- Llista quants productes de categoria 'Begudes' s'han venut en una determinada localitat.
+SELECT count(begudes.idbegudes), tenda.localitat_idlocalitat, localitat.nom FROM begudes, tenda
+INNER JOIN comanda ON tenda.idtenda = comanda.treballador_tenda_idtenda 
+INNER JOIN localitat ON tenda.localitat_idlocalitat = localitat.idlocalitat
+WHERE tenda.localitat_idlocalitat = 1;
 
-//Llista quantes comandes ha efectuat un determinat empleat/da
-select count(comanda.idcomanda), treballador.nom from comanda
-inner join tenda on comanda.tenda_idtenda = tenda.idtenda
-inner join treballador on treballador.idtreballador
+-- Llista quantes comandes ha efectuat un determinat empleat/da
+SELECT count(comanda.idcomanda), treballador.nom FROM comanda
+INNER JOIN treballador ON comanda.treballador_idtreballador = treballador.idtreballador
+WHERE treballador.nom = 'Wendi';
